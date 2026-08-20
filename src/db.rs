@@ -17,9 +17,14 @@ pub fn generate_installed_db(target: &Path) -> Result<()> {
             if path.extension().map_or(false, |ext| ext == "json") {
                 let file = File::open(&path)?;
                 let manifest: Value = serde_json::from_reader(file)?;
-                
-                if let Some(name) = manifest.get("name").and_then(|n| n.as_str()) {
-                    db[name] = manifest;
+                let package_name = manifest
+                    .get("name")
+                    .and_then(|n| n.as_str())
+                    .map(ToString::to_string);
+                if let Some(name) = package_name {
+                    if let Some(obj) = db.as_object_mut() {
+                        obj.insert(name, manifest);
+                    }
                 }
             }
         }

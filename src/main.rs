@@ -14,7 +14,10 @@ fn main() -> Result<()> {
     println!("Target: {}", args.target.display());
 
     fhs::create_fhs(&args.target)?;
+
     let prof = profile::Profile::load(&args.profile, args.repo.as_deref())?;
+    println!("[+] Active profile: {} (contains {} packages)", prof.name, prof.packages.len());
+
     for pkg in &prof.packages {
         package::install_package(pkg, &args.target, args.repo.as_deref())?;
     }
