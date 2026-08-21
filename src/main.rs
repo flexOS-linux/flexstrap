@@ -10,7 +10,7 @@ use clap::Parser;
 fn main() -> Result<()> {
     let args = cli::Cli::parse();
 
-    println!("=== flexstrap v0.1.0 ===");
+    println!("=== flexstrap v{} ===", env!("CARGO_PKG_VERSION"));
     println!("Target: {}", args.target.display());
 
     fhs::create_fhs(&args.target)?;
