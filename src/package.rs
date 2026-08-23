@@ -39,10 +39,17 @@ fn unpack_fpk(fpk_path: &Path, target: &Path, pkg_name: &str) -> Result<()> {
                 continue;
             }
             let dest_path = target.join(rel_path);
-            
-            if let Some(parent) = dest_path.parent() {
-                fs::create_dir_all(parent)?;
+
+            // Если это запись директории и она уже существует (или это симлинк на папку),
+            // пропускаем unpack самой папки, чтобы tar не пытался сделать mkdir поверх симлинка
+            if entry.header().entry_type().is_dir() && dest_path.exists() {
+                continue;
             }
+
+            if let Some(parent) = dest_path.parent() {
+                let _ = fs::create_dir_all(parent);
+            }
+
             entry.unpack(&dest_path)?;
         }
     }
